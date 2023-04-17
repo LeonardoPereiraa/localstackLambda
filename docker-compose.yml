@@ -1,0 +1,33 @@
+version: "3.1"
+ 
+services:
+  localstack:
+    image: "localstack/localstack"
+    container_name: "localstack"
+    ports:
+      - "4566-4599:4566-4599"
+    environment:
+      - DEBUG=1
+      - DEFAULT_REGION=eu-west-1
+      - SERVICES=lambda
+      - DATA_DIR=/tmp/localstack/data
+      - DOCKER_HOST=unix:///var/run/docker.sock
+#      - LAMBDA_EXECUTOR=docker
+    networks:
+      - AWSlocalstack
+    volumes:
+      - "/tmp/localstack:/tmp/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - ./app:/app
+  gogogo:
+    build: ./goDockerfile
+    container_name: meugo
+    networks:
+      - AWSlocalstack
+    volumes:
+      - ./app:/go/app
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+networks:
+  AWSlocalstack:
+    driver: bridge
